@@ -2,28 +2,32 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Resultados Liguilla</title>
+  <title>Clasificación Liguilla</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { padding: 20px; }
-    .team-table th, .team-table td { text-align: center; }
+    .table th, .table td { text-align: center; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1 class="text-center mb-4">📊 Diferencia de Goles por Equipo</h1>
-  <table class="table table-bordered team-table">
+  <h1 class="text-center mb-4">🏆 Clasificación General</h1>
+  <table class="table table-bordered table-striped">
     <thead class="table-dark">
       <tr>
+        <th>Posición</th>
         <th>Equipo</th>
-        <th>Diferencia de Goles</th>
+        <th>Puntos</th>
+        <th>GF</th>
+        <th>GC</th>
+        <th>DIF</th>
       </tr>
     </thead>
-    <tbody id="tabla-diferencias"></tbody>
+    <tbody id="tabla-clasificacion"></tbody>
   </table>
 
-  <h2 class="text-center mt-5 mb-4">⚽ Resultados de los Partidos</h2>
+  <h2 class="text-center mt-5 mb-4">📋 Resultados de los Partidos</h2>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -41,8 +45,8 @@
 
 <script>
   const equipos = ["Acusados", "Desmadre", "Colokon", "Eskandalo", "Majos-Sinfin", "Desfase"];
-  const diferencias = {};
-  equipos.forEach(e => diferencias[e] = 0);
+  const stats = {};
+  equipos.forEach(e => stats[e] = { puntos: 0, gf: 0, gc: 0 });
 
   // 📝 Edita los goles aquí directamente
   const partidos = [
@@ -75,13 +79,48 @@
         <td>${p.golesVisitante}</td>
       </tr>
     `;
-    diferencias[p.local] += p.golesLocal - p.golesVisitante;
-    diferencias[p.visitante] += p.golesVisitante - p.golesLocal;
+
+    // Actualizar goles
+    stats[p.local].gf += p.golesLocal;
+    stats[p.local].gc += p.golesVisitante;
+    stats[p.visitante].gf += p.golesVisitante;
+    stats[p.visitante].gc += p.golesLocal;
+
+    // Asignar puntos
+    if (p.golesLocal > p.golesVisitante) {
+      stats[p.local].puntos += 3;
+    } else if (p.golesLocal < p.golesVisitante) {
+      stats[p.visitante].puntos += 3;
+    } else {
+      stats[p.local].puntos += 1;
+      stats[p.visitante].puntos += 1;
+    }
   });
 
-  const tablaDiferencias = document.getElementById("tabla-diferencias");
-  equipos.forEach(e => {
-    tablaDiferencias.innerHTML += `<tr><td>${e}</td><td>${diferencias[e]}</td></tr>`;
+  // Generar clasificación ordenada
+  const clasificacion = equipos.map(e => {
+    const s = stats[e];
+    return {
+      equipo: e,
+      puntos: s.puntos,
+      gf: s.gf,
+      gc: s.gc,
+      dif: s.gf - s.gc
+    };
+  }).sort((a, b) => b.puntos - a.puntos || b.dif - a.dif);
+
+  const tablaClasificacion = document.getElementById("tabla-clasificacion");
+  clasificacion.forEach((e, i) => {
+    tablaClasificacion.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${e.equipo}</td>
+        <td>${e.puntos}</td>
+        <td>${e.gf}</td>
+        <td>${e.gc}</td>
+        <td>${e.dif}</td>
+      </tr>
+    `;
   });
 </script>
 
