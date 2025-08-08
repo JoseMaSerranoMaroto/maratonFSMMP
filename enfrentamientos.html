@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liguilla de Equipos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { padding: 20px; }
+    .team-table th, .team-table td { text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1 class="text-center mb-4">📊 Tabla de Diferencia de Goles</h1>
+  <table class="table table-bordered team-table">
+    <thead class="table-dark">
+      <tr>
+        <th>Equipo</th>
+        <th>Diferencia de Goles</th>
+      </tr>
+    </thead>
+    <tbody id="teams">
+      <tr><td>A</td><td id="diff-A">0</td></tr>
+      <tr><td>B</td><td id="diff-B">0</td></tr>
+      <tr><td>C</td><td id="diff-C">0</td></tr>
+      <tr><td>D</td><td id="diff-D">0</td></tr>
+      <tr><td>E</td><td id="diff-E">0</td></tr>
+      <tr><td>F</td><td id="diff-F">0</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="text-center mt-5 mb-4">⚽ Resultados de Partidos</h2>
+  <div class="row gy-3">
+
+    <!-- Generar los 15 partidos -->
+    <script>
+      const equipos = ['A', 'B', 'C', 'D', 'E', 'F'];
+      let partidoIndex = 0;
+      equipos.forEach((local, i) => {
+        for (let j = i + 1; j < equipos.length; j++) {
+          const visitante = equipos[j];
+          document.write(`
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">${local} vs ${visitante}</div>
+                <div class="card-body">
+                  <div class="input-group mb-2">
+                    <span class="input-group-text">${local}</span>
+                    <input type="number" class="form-control" id="score-${partidoIndex}-${local}" min="0">
+                    <span class="input-group-text">${visitante}</span>
+                    <input type="number" class="form-control" id="score-${partidoIndex}-${visitante}" min="0">
+                  </div>
+                  <button class="btn btn-primary w-100" onclick="updateDiff('${local}','${visitante}','score-${partidoIndex}-${local}','score-${partidoIndex}-${visitante}')">Actualizar</button>
+                </div>
+              </div>
+            </div>
+          `);
+          partidoIndex++;
+        }
+      });
+    </script>
+
+  </div>
+</div>
+
+<script>
+  const diferencias = {
+    A: 0, B: 0, C: 0, D: 0, E: 0, F: 0
+  };
+
+  function updateDiff(equipo1, equipo2, input1Id, input2Id) {
+    const g1 = parseInt(document.getElementById(input1Id).value) || 0;
+    const g2 = parseInt(document.getElementById(input2Id).value) || 0;
+
+    const prevDiff1 = diferencias[equipo1];
+    const prevDiff2 = diferencias[equipo2];
+
+    const newDiff1 = g1 - g2;
+    const newDiff2 = g2 - g1;
+
+    // Ajustar diferencia total
+    diferencias[equipo1] += newDiff1 - (document.getElementById(input1Id).dataset.diff1 || 0);
+    diferencias[equipo2] += newDiff2 - (document.getElementById(input2Id).dataset.diff2 || 0);
+
+    // Guardar los nuevos valores para evitar duplicar
+    document.getElementById(input1Id).dataset.diff1 = newDiff1;
+    document.getElementById(input2Id).dataset.diff2 = newDiff2;
+
+    // Actualizar en la tabla
+    document.getElementById(`diff-${equipo1}`).textContent = diferencias[equipo1];
+    document.getElementById(`diff-${equipo2}`).textContent = diferencias[equipo2];
+  }
+</script>
+
+</body>
+</html>
