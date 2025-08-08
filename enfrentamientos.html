@@ -25,68 +25,83 @@
   </table>
 
   <h2 class="text-center mt-5 mb-4">⚽ Resultados de los Partidos</h2>
-  <table class="table table-striped">
-    <thead class="table-secondary">
-      <tr>
-        <th>Local</th>
-        <th>Goles Local</th>
-        <th>Visitante</th>
-        <th>Goles Visitante</th>
-      </tr>
-    </thead>
-    <tbody id="tabla-partidos"></tbody>
-  </table>
+  <div class="row gy-3" id="partidos"></div>
 </div>
 
 <script>
-  // Resultados precargados
+  const equipos = ["Acusados", "Desmadre", "Colokon", "Eskandalo", "Majos-Sinfin", "Desfase"];
+  const diferencias = {};
+  equipos.forEach(e => diferencias[e] = 0);
+
   const partidos = [
-    { local: 'A', visitante: 'B', golesLocal: 0, golesVisitante: 0 },
-    { local: 'A', visitante: 'C', golesLocal: 0, golesVisitante: 3 },
-    { local: 'A', visitante: 'D', golesLocal: 1, golesVisitante: 1 },
-    { local: 'A', visitante: 'E', golesLocal: 4, golesVisitante: 2 },
-    { local: 'A', visitante: 'F', golesLocal: 2, golesVisitante: 2 },
-    { local: 'B', visitante: 'C', golesLocal: 1, golesVisitante: 0 },
-    { local: 'B', visitante: 'D', golesLocal: 2, golesVisitante: 2 },
-    { local: 'B', visitante: 'E', golesLocal: 0, golesVisitante: 1 },
-    { local: 'B', visitante: 'F', golesLocal: 3, golesVisitante: 1 },
-    { local: 'C', visitante: 'D', golesLocal: 1, golesVisitante: 0 },
-    { local: 'C', visitante: 'E', golesLocal: 2, golesVisitante: 2 },
-    { local: 'C', visitante: 'F', golesLocal: 0, golesVisitante: 1 },
-    { local: 'D', visitante: 'E', golesLocal: 1, golesVisitante: 3 },
-    { local: 'D', visitante: 'F', golesLocal: 2, golesVisitante: 2 },
-    { local: 'E', visitante: 'F', golesLocal: 1, golesVisitante: 0 }
+    { hora: "19:00", local: "Acusados", visitante: "Desmadre" },
+    { hora: "19:26", local: "Colokon", visitante: "Eskandalo" },
+    { hora: "19:52", local: "Majos-Sinfin", visitante: "Desfase" },
+    { hora: "20:18", local: "Acusados", visitante: "Colokon" },
+    { hora: "20:44", local: "Desmadre", visitante: "Majos-Sinfin" },
+    { hora: "21:10", local: "Eskandalo", visitante: "Desfase" },
+    { hora: "21:36", local: "Acusados", visitante: "Majos-Sinfin" },
+    { hora: "22:02", local: "Desmadre", visitante: "Eskandalo" },
+    { hora: "22:28", local: "Colokon", visitante: "Desfase" },
+    { hora: "22:54", local: "Acusados", visitante: "Eskandalo" },
+    { hora: "23:20", local: "Desmadre", visitante: "Desfase" },
+    { hora: "23:46", local: "Majos-Sinfin", visitante: "Colokon" },
+    { hora: "00:12", local: "Acusados", visitante: "Desfase" },
+    { hora: "00:38", local: "Desmadre", visitante: "Colokon" },
+    { hora: "01:04", local: "Majos-Sinfin", visitante: "Eskandalo" }
   ];
 
-  const diferencias = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
-
-  // Mostrar tabla de partidos
-  const tablaPartidos = document.getElementById('tabla-partidos');
-  partidos.forEach(p => {
-    tablaPartidos.innerHTML += `
-      <tr>
-        <td>${p.local}</td>
-        <td>${p.golesLocal}</td>
-        <td>${p.visitante}</td>
-        <td>${p.golesVisitante}</td>
-      </tr>
+  const container = document.getElementById("partidos");
+  partidos.forEach((p, i) => {
+    const idLocal = `score-${i}-${p.local}`;
+    const idVisitante = `score-${i}-${p.visitante}`;
+    const card = document.createElement("div");
+    card.className = "col-md-6";
+    card.innerHTML = `
+      <div class="card">
+        <div class="card-header">Partido ${i + 1} – ${p.hora}<br><strong>${p.local}</strong> vs <strong>${p.visitante}</strong></div>
+        <div class="card-body">
+          <div class="input-group mb-2">
+            <span class="input-group-text">${p.local}</span>
+            <input type="number" class="form-control" id="${idLocal}" min="0">
+            <span class="input-group-text">${p.visitante}</span>
+            <input type="number" class="form-control" id="${idVisitante}" min="0">
+          </div>
+          <button class="btn btn-primary w-100" onclick="updateDiff('${p.local}','${p.visitante}','${idLocal}','${idVisitante}')">Actualizar</button>
+        </div>
+      </div>
     `;
-
-    // Calcular diferencia de goles
-    diferencias[p.local] += p.golesLocal - p.golesVisitante;
-    diferencias[p.visitante] += p.golesVisitante - p.golesLocal;
+    container.appendChild(card);
   });
 
-  // Mostrar tabla de diferencias
-  const tablaDiferencias = document.getElementById('tabla-diferencias');
-  Object.keys(diferencias).forEach(equipo => {
-    tablaDiferencias.innerHTML += `
-      <tr>
-        <td>${equipo}</td>
-        <td>${diferencias[equipo]}</td>
-      </tr>
-    `;
-  });
+  function updateDiff(equipo1, equipo2, input1Id, input2Id) {
+    const g1 = parseInt(document.getElementById(input1Id).value) || 0;
+    const g2 = parseInt(document.getElementById(input2Id).value) || 0;
+
+    const prevDiff1 = parseInt(document.getElementById(input1Id).dataset.diff1) || 0;
+    const prevDiff2 = parseInt(document.getElementById(input2Id).dataset.diff2) || 0;
+
+    const newDiff1 = g1 - g2;
+    const newDiff2 = g2 - g1;
+
+    diferencias[equipo1] += newDiff1 - prevDiff1;
+    diferencias[equipo2] += newDiff2 - prevDiff2;
+
+    document.getElementById(input1Id).dataset.diff1 = newDiff1;
+    document.getElementById(input2Id).dataset.diff2 = newDiff2;
+
+    renderTabla();
+  }
+
+  function renderTabla() {
+    const tabla = document.getElementById("tabla-diferencias");
+    tabla.innerHTML = "";
+    equipos.forEach(e => {
+      tabla.innerHTML += `<tr><td>${e}</td><td>${diferencias[e]}</td></tr>`;
+    });
+  }
+
+  renderTabla();
 </script>
 
 </body>
