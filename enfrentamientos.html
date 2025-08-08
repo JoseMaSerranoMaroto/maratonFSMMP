@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Resultados de la Liguilla</title>
+  <title>Resultados Liguilla</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { padding: 20px; }
@@ -25,7 +24,19 @@
   </table>
 
   <h2 class="text-center mt-5 mb-4">⚽ Resultados de los Partidos</h2>
-  <div class="row gy-3" id="partidos"></div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Hora</th>
+        <th>Local</th>
+        <th>Goles</th>
+        <th>Visitante</th>
+        <th>Goles</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-partidos"></tbody>
+  </table>
 </div>
 
 <script>
@@ -33,75 +44,45 @@
   const diferencias = {};
   equipos.forEach(e => diferencias[e] = 0);
 
+  // 📝 Edita los goles aquí directamente
   const partidos = [
-    { hora: "19:00", local: "Acusados", visitante: "Desmadre" },
-    { hora: "19:26", local: "Colokon", visitante: "Eskandalo" },
-    { hora: "19:52", local: "Majos-Sinfin", visitante: "Desfase" },
-    { hora: "20:18", local: "Acusados", visitante: "Colokon" },
-    { hora: "20:44", local: "Desmadre", visitante: "Majos-Sinfin" },
-    { hora: "21:10", local: "Eskandalo", visitante: "Desfase" },
-    { hora: "21:36", local: "Acusados", visitante: "Majos-Sinfin" },
-    { hora: "22:02", local: "Desmadre", visitante: "Eskandalo" },
-    { hora: "22:28", local: "Colokon", visitante: "Desfase" },
-    { hora: "22:54", local: "Acusados", visitante: "Eskandalo" },
-    { hora: "23:20", local: "Desmadre", visitante: "Desfase" },
-    { hora: "23:46", local: "Majos-Sinfin", visitante: "Colokon" },
-    { hora: "00:12", local: "Acusados", visitante: "Desfase" },
-    { hora: "00:38", local: "Desmadre", visitante: "Colokon" },
-    { hora: "01:04", local: "Majos-Sinfin", visitante: "Eskandalo" }
+    { hora: "19:00", local: "Acusados", golesLocal: 2, visitante: "Desmadre", golesVisitante: 1 },
+    { hora: "19:26", local: "Colokon", golesLocal: 0, visitante: "Eskandalo", golesVisitante: 3 },
+    { hora: "19:52", local: "Majos-Sinfin", golesLocal: 1, visitante: "Desfase", golesVisitante: 1 },
+    { hora: "20:18", local: "Acusados", golesLocal: 3, visitante: "Colokon", golesVisitante: 2 },
+    { hora: "20:44", local: "Desmadre", golesLocal: 0, visitante: "Majos-Sinfin", golesVisitante: 2 },
+    { hora: "21:10", local: "Eskandalo", golesLocal: 2, visitante: "Desfase", golesVisitante: 2 },
+    { hora: "21:36", local: "Acusados", golesLocal: 1, visitante: "Majos-Sinfin", golesVisitante: 1 },
+    { hora: "22:02", local: "Desmadre", golesLocal: 3, visitante: "Eskandalo", golesVisitante: 0 },
+    { hora: "22:28", local: "Colokon", golesLocal: 1, visitante: "Desfase", golesVisitante: 1 },
+    { hora: "22:54", local: "Acusados", golesLocal: 0, visitante: "Eskandalo", golesVisitante: 2 },
+    { hora: "23:20", local: "Desmadre", golesLocal: 2, visitante: "Desfase", golesVisitante: 2 },
+    { hora: "23:46", local: "Majos-Sinfin", golesLocal: 1, visitante: "Colokon", golesVisitante: 0 },
+    { hora: "00:12", local: "Acusados", golesLocal: 2, visitante: "Desfase", golesVisitante: 2 },
+    { hora: "00:38", local: "Desmadre", golesLocal: 1, visitante: "Colokon", golesVisitante: 1 },
+    { hora: "01:04", local: "Majos-Sinfin", golesLocal: 0, visitante: "Eskandalo", golesVisitante: 1 }
   ];
 
-  const container = document.getElementById("partidos");
+  const tablaPartidos = document.getElementById("tabla-partidos");
   partidos.forEach((p, i) => {
-    const idLocal = `score-${i}-${p.local}`;
-    const idVisitante = `score-${i}-${p.visitante}`;
-    const card = document.createElement("div");
-    card.className = "col-md-6";
-    card.innerHTML = `
-      <div class="card">
-        <div class="card-header">Partido ${i + 1} – ${p.hora}<br><strong>${p.local}</strong> vs <strong>${p.visitante}</strong></div>
-        <div class="card-body">
-          <div class="input-group mb-2">
-            <span class="input-group-text">${p.local}</span>
-            <input type="number" class="form-control" id="${idLocal}" min="0">
-            <span class="input-group-text">${p.visitante}</span>
-            <input type="number" class="form-control" id="${idVisitante}" min="0">
-          </div>
-          <button class="btn btn-primary w-100" onclick="updateDiff('${p.local}','${p.visitante}','${idLocal}','${idVisitante}')">Actualizar</button>
-        </div>
-      </div>
+    tablaPartidos.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${p.hora}</td>
+        <td>${p.local}</td>
+        <td>${p.golesLocal}</td>
+        <td>${p.visitante}</td>
+        <td>${p.golesVisitante}</td>
+      </tr>
     `;
-    container.appendChild(card);
+    diferencias[p.local] += p.golesLocal - p.golesVisitante;
+    diferencias[p.visitante] += p.golesVisitante - p.golesLocal;
   });
 
-  function updateDiff(equipo1, equipo2, input1Id, input2Id) {
-    const g1 = parseInt(document.getElementById(input1Id).value) || 0;
-    const g2 = parseInt(document.getElementById(input2Id).value) || 0;
-
-    const prevDiff1 = parseInt(document.getElementById(input1Id).dataset.diff1) || 0;
-    const prevDiff2 = parseInt(document.getElementById(input2Id).dataset.diff2) || 0;
-
-    const newDiff1 = g1 - g2;
-    const newDiff2 = g2 - g1;
-
-    diferencias[equipo1] += newDiff1 - prevDiff1;
-    diferencias[equipo2] += newDiff2 - prevDiff2;
-
-    document.getElementById(input1Id).dataset.diff1 = newDiff1;
-    document.getElementById(input2Id).dataset.diff2 = newDiff2;
-
-    renderTabla();
-  }
-
-  function renderTabla() {
-    const tabla = document.getElementById("tabla-diferencias");
-    tabla.innerHTML = "";
-    equipos.forEach(e => {
-      tabla.innerHTML += `<tr><td>${e}</td><td>${diferencias[e]}</td></tr>`;
-    });
-  }
-
-  renderTabla();
+  const tablaDiferencias = document.getElementById("tabla-diferencias");
+  equipos.forEach(e => {
+    tablaDiferencias.innerHTML += `<tr><td>${e}</td><td>${diferencias[e]}</td></tr>`;
+  });
 </script>
 
 </body>
