@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Clasificación de Liga</title>
+  <!-- ✅ Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* 🎨 Colores por posición */
+    .top {
+      background-color: #d4edda !important; /* verde claro */
+    }
+    .middle {
+      background-color: #fff3cd !important; /* amarillo claro */
+    }
+    .bottom {
+      background-color: #f8d7da !important; /* rojo claro */
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+  <div class="container py-5">
+    <h1 class="text-center mb-4">Clasificación de Liga</h1>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>Posición</th>
+            <th>Equipo</th>
+            <th>Puntos</th>
+            <th>Diferencia de Goles</th>
+          </tr>
+        </thead>
+        <tbody id="leagueTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // ⚙️ Datos de los equipos (modificables manualmente)
+    const equipos = [
+      { nombre: "Desfase", puntos: 10, diferenciaGoles: 4 },
+      { nombre: "Acusados", puntos: 12, diferenciaGoles: 6 },
+      { nombre: "Colokon", puntos: 8, diferenciaGoles: 2 },
+      { nombre: "Eskandalo", puntos: 14, diferenciaGoles: 7 },
+      { nombre: "Majos-Sinfin", puntos: 6, diferenciaGoles: -1 },
+      { nombre: "Desmadre", puntos: 6, diferenciaGoles: -3 }
+    ];
+
+    // 🔄 Ordenar por puntos y diferencia de goles
+    equipos.sort((a, b) => {
+      if (b.puntos !== a.puntos) return b.puntos - a.puntos;
+      return b.diferenciaGoles - a.diferenciaGoles;
+    });
+
+    // 🧱 Renderizar tabla con colores
+    const tbody = document.getElementById("leagueTableBody");
+    equipos.forEach((equipo, index) => {
+      const fila = document.createElement("tr");
+
+      // 🖌️ Asignar clase según posición
+      if (index < 2) {
+        fila.classList.add("top");
+      } else if (index < 4) {
+        fila.classList.add("middle");
+      } else {
+        fila.classList.add("bottom");
+      }
+
+      fila.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${equipo.nombre}</td>
+        <td>${equipo.puntos}</td>
+        <td>${equipo.diferenciaGoles}</td>
+      `;
+      tbody.appendChild(fila);
+    });
+  </script>
+
+</body>
+</html>
